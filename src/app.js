@@ -1,4 +1,4 @@
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js';
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js'
 
 import {
   getAuth,
@@ -6,7 +6,7 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
   signOut,
-} from 'https://www.gstatic.com/firebasejs/9.19.1/firebase-auth.js';
+} from 'https://www.gstatic.com/firebasejs/9.19.1/firebase-auth.js'
 
 const firebaseConfig = {
   apiKey: 'AIzaSyAgCvPIQ85bAgQBbhGyfIzy5zzdYe2zySM',
@@ -15,7 +15,7 @@ const firebaseConfig = {
   storageBucket: 'chat-firebase-codebreaker518.appspot.com',
   messagingSenderId: '425082320536',
   appId: '1:425082320536:web:9d80cd630068af7ce802ed',
-};
+}
 
 import {
   getFirestore, //obtiene la BD
@@ -24,83 +24,127 @@ import {
   query, // realizar consultas (where)
   onSnapshot, // previamente guardado
   orderBy, // ordenacion de resultados
-} from 'https://www.gstatic.com/firebasejs/9.19.1/firebase-firestore.js';
+} from 'https://www.gstatic.com/firebasejs/9.19.1/firebase-firestore.js'
 
-const acceder = document.querySelector('#acceder');
-const salir = document.querySelector('#salir');
-const formulario = document.querySelector('#formulario');
-const templateChat = document.querySelector('#templateChat');
-const chat = document.querySelector('#chat');
-const btnEnviar = document.querySelector('#btnEnviar');
-const mensajeLogOut = document.querySelector('#mensajeLogOut');
+const acceder = document.querySelector('#acceder')
+const salir = document.querySelector('#salir')
+const formulario = document.querySelector('#formulario')
+const templateChat = document.querySelector('#templateChat')
+const chat = document.querySelector('#chat')
+const btnEnviar = document.querySelector('#btnEnviar')
+const mensajeLogOut = document.querySelector('#mensajeLogOut')
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-console.log('@@auth =>', auth);
-const db = getFirestore(app);
+const app = initializeApp(firebaseConfig)
+const auth = getAuth(app)
+console.log('@@auth =>', auth)
+const db = getFirestore(app)
 
 const mostrarElemento = (elemento) => {
-  elemento.classList.remove('d-none');
-};
+  elemento.classList.remove('d-none')
+}
 
 const ocultarElemento = (elemento) => {
-  elemento.classList.add('d-none');
-};
+  elemento.classList.add('d-none')
+}
 
 //variable para controlar un usuario suscrito
-let unsubscribe;
+let unsubscribe
 
 onAuthStateChanged(auth, (user) => {
   if (user) {
-    mostrarElemento(salir);
-    mostrarElemento(chat);
-    mostrarElemento(formulario);
-    ocultarElemento(acceder);
-    ocultarElemento(mensajeLogOut);
+    mostrarElemento(salir)
+    mostrarElemento(chat)
+    mostrarElemento(formulario)
+    ocultarElemento(acceder)
+    ocultarElemento(mensajeLogOut)
 
-    // chat.innerHTML = '';
-    const q = query(collection(db, 'chat'), orderBy('fecha'));
+    // chat.innerHTML = ''
+    const q = query(collection(db, 'chat'), orderBy('fecha'))
     unsubscribe = onSnapshot(q, (snapshot) => {
       snapshot.docChanges().forEach((change) => {
         if (change.type === 'added') {
-          pintarChat(change.doc.data());
+          pintarChat(change.doc.data())
         }
-        chat.scrollTop = chat.scrollHeight;
-      });
-    });
+        chat.scrollTop = chat.scrollHeight
+      })
+    })
   } else {
-    ocultarElemento(chat);
-    ocultarElemento(formulario);
-    mostrarElemento(acceder);
-    mostrarElemento(mensajeLogOut);
+    ocultarElemento(chat)
+    ocultarElemento(formulario)
+    mostrarElemento(acceder)
+    mostrarElemento(mensajeLogOut)
 
     // Verificar si hay una suscripción activa antes de cancelarla
     if (unsubscribe) {
-      unsubscribe();
+      unsubscribe()
     }
   }
-});
+})
 
 acceder.addEventListener('click', () => {
-  const provider = new GoogleAuthProvider();
+  const provider = new GoogleAuthProvider()
   signInWithPopup(auth, provider)
     .then((result) => {
       // El usuario ha iniciado sesión correctamente
-      console.log('Usuario autenticado:', result.user);
+      console.log('Usuario autenticado:', result.user)
     })
     .catch((error) => {
       // Ha ocurrido un error al autenticar al usuario
-      console.error('Error al autenticar usuario:', error);
-    });
-});
+      console.error('Error al autenticar usuario:', error)
+    })
+})
 
 salir.addEventListener('click', () => {
   signOut(auth)
     .then(() => {
-      ocultarElemento(salir);
-      console.log('Sesión cerrada');
+      ocultarElemento(salir)
+      console.log('Sesión cerrada')
     })
     .catch((error) => {
-      console.error(error);
-    });
-});
+      console.error(error)
+    })
+})
+
+formulario.addEventListener('submit', async (e) => {
+  e.preventDefault() //es para prevenir que el submit haga un refresh en la pagna
+  if (!auth.currentUser) return
+  if (!formulario.msg.value.trim()) {
+    formulario.msg.focus()
+    formulario.msg.value = ''
+    return
+  }
+
+  try {
+    btnEnviar.disabled = true
+    const mensaje = await addDoc(collection(db, 'chat'), {
+      msg: formulario.msg.value.trim(),
+      fecha: Date.now(),
+      uid: auth.currentUser.uid,
+    })
+    console.log('@@@ Mensaje', mensaje)
+    formulario.msg.value = ''
+  } catch (error) {
+    console.log(error)
+  } finally {
+    btnEnviar.disabled = false
+  }
+})
+
+const pintarChat = ({ msg, uid }) => {
+  const clone = templateChat.content.cloneNode(true)
+  const div = clone.querySelector('div')
+  if (div) {
+    if (uid === auth.currentUser.uid) {
+      div.classList.add('text-end')
+      div.classList.add('bg-success')
+    } else {
+      div.classList.add('text-start')
+      div.classList.add('bg-secondary')
+    }
+  }
+  const span = clone.querySelector('span')
+  if (span) {
+    span.textContent = msg
+  }
+  chat.append(clone)
+}
