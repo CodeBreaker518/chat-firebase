@@ -48,7 +48,7 @@ const ocultarElemento = (elemento) => {
 }
 
 //variable para controlar un usuario suscrito
-let unsubscribe
+let unsubscribe = null
 
 onAuthStateChanged(auth, (user) => {
   if (user) {
@@ -58,7 +58,7 @@ onAuthStateChanged(auth, (user) => {
     ocultarElemento(acceder)
     ocultarElemento(mensajeLogOut)
 
-    // chat.innerHTML = ''
+    chat.innerHTML = ''
     const q = query(collection(db, 'chat'), orderBy('fecha'))
     unsubscribe = onSnapshot(q, (snapshot) => {
       snapshot.docChanges().forEach((change) => {
@@ -74,7 +74,6 @@ onAuthStateChanged(auth, (user) => {
     mostrarElemento(acceder)
     mostrarElemento(mensajeLogOut)
 
-    // Verificar si hay una suscripción activa antes de cancelarla
     if (unsubscribe) {
       unsubscribe()
     }
@@ -120,6 +119,7 @@ formulario.addEventListener('submit', async (e) => {
       msg: formulario.msg.value.trim(),
       fecha: Date.now(),
       uid: auth.currentUser.uid,
+      username: auth.currentUser.displayName,
     })
     console.log('@@@ Mensaje', mensaje)
     formulario.msg.value = ''
@@ -130,21 +130,34 @@ formulario.addEventListener('submit', async (e) => {
   }
 })
 
-const pintarChat = ({ msg, uid }) => {
+const pintarChat = ({ msg, uid, username, fecha }) => {
   const clone = templateChat.content.cloneNode(true)
   const div = clone.querySelector('div')
   if (div) {
     if (uid === auth.currentUser.uid) {
       div.classList.add('text-end')
-      div.classList.add('bg-success')
+      div.querySelector('span').classList.add('bg-success')
     } else {
       div.classList.add('text-start')
-      div.classList.add('bg-secondary')
+      div.querySelector('span').classList.add('bg-secondary')
     }
   }
   const span = clone.querySelector('span')
   if (span) {
     span.textContent = msg
+  }
+  const userName = clone.querySelector('p.username')
+  if (userName) {
+    if (username === auth.currentUser.displayName) {
+    } else {
+      userName.textContent = username
+    }
+  }
+  const fechaElement = clone.querySelector('small.fecha')
+  if (fechaElement) {
+    const fechaDate = new Date(fecha)
+    const fechaFormatted = fechaDate.toLocaleString()
+    fechaElement.textContent = fechaFormatted
   }
   chat.append(clone)
 }
