@@ -33,6 +33,7 @@ const templateChat = document.querySelector('#templateChat')
 const chat = document.querySelector('#chat')
 const btnEnviar = document.querySelector('#btnEnviar')
 const mensajeLogOut = document.querySelector('#mensajeLogOut')
+const textInput = document.querySelector('#text-input > label')
 
 const app = initializeApp(firebaseConfig)
 const auth = getAuth(app)
@@ -40,11 +41,11 @@ console.log('@@auth =>', auth)
 const db = getFirestore(app)
 
 const mostrarElemento = (elemento) => {
-  elemento.classList.remove('d-none')
+  elemento.classList.remove('hide')
 }
 
 const ocultarElemento = (elemento) => {
-  elemento.classList.add('d-none')
+  elemento.classList.add('hide')
 }
 
 //variable para controlar un usuario suscrito
@@ -105,40 +106,46 @@ salir.addEventListener('click', () => {
 })
 
 formulario.addEventListener('submit', async (e) => {
-  e.preventDefault() //es para prevenir que el submit haga un refresh en la pagna
-  if (!auth.currentUser) return
+  e.preventDefault(); // Prevenir el refresh de la página por defecto
+  if (!auth.currentUser) return;
   if (!formulario.msg.value.trim()) {
-    formulario.msg.focus()
-    formulario.msg.value = ''
-    return
+    formulario.msg.focus();
+    formulario.msg.value = '';
+    return;
   }
 
   try {
-    btnEnviar.disabled = true
+    btnEnviar.disabled = true;
     const mensaje = await addDoc(collection(db, 'chat'), {
       uid: auth.currentUser.uid,
       username: auth.currentUser.displayName,
       msg: formulario.msg.value.trim(),
       fecha: Date.now(),
-    })
-    console.log('@@@ Mensaje', mensaje)
-    formulario.msg.value = ''
+    });
+    console.log('@@@ Mensaje', mensaje);
+    formulario.msg.value = '';
+    formulario.msg.classList.remove('valid'); // Quitar la clase .valid
+    M.updateTextFields(); // Actualizar campos de texto para quitar el enfoque
   } catch (error) {
-    console.log(error)
+    console.log(error);
   } finally {
-    btnEnviar.disabled = false
+    btnEnviar.disabled = false;
   }
-})
+});
 
 const pintarChat = ({ msg, uid, username, fecha }) => {
   const clone = templateChat.content.cloneNode(true)
   const div = clone.querySelector('div')
   if (div) {
     if (uid === auth.currentUser.uid) {
-      div.classList.add('text-end')
+      div.classList.add('msg-container-end')
+      div.classList.add('msg-up-end')
+      div.classList.add('msg-down-end')
       div.querySelector('span').classList.add('bg-success')
     } else {
-      div.classList.add('text-start')
+      div.classList.add('msg-container-start')
+      div.classList.add('msg-up-start')
+      div.classList.add('msg-down-start')
       div.querySelector('span').classList.add('bg-secondary')
     }
   }
@@ -151,12 +158,13 @@ const pintarChat = ({ msg, uid, username, fecha }) => {
   // showing username
   if (userName) {
     if (username === auth.currentUser.displayName) {
+      userName.textContent = "Me"
     } else {
       userName.textContent = username
     }
   }
   // showing date & hour
-  const fechaElement = clone.querySelector('small.fecha')
+  const fechaElement = clone.querySelector('p.fecha')
   if (fechaElement) {
     const fechaDate = new Date(fecha)
     const fechaFormatted = fechaDate.toLocaleString()
