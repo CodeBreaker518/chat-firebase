@@ -116,10 +116,10 @@ formulario.addEventListener('submit', async (e) => {
   try {
     btnEnviar.disabled = true
     const mensaje = await addDoc(collection(db, 'chat'), {
-      msg: formulario.msg.value.trim(),
-      fecha: Date.now(),
       uid: auth.currentUser.uid,
       username: auth.currentUser.displayName,
+      msg: formulario.msg.value.trim(),
+      fecha: Date.now(),
     })
     console.log('@@@ Mensaje', mensaje)
     formulario.msg.value = ''
