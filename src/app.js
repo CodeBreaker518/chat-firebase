@@ -142,17 +142,20 @@ const pintarChat = ({ msg, uid, username, fecha }) => {
       div.querySelector('span').classList.add('bg-secondary')
     }
   }
+  // showing message
   const span = clone.querySelector('span')
   if (span) {
     span.textContent = msg
   }
   const userName = clone.querySelector('p.username')
+  // showing username
   if (userName) {
     if (username === auth.currentUser.displayName) {
     } else {
       userName.textContent = username
     }
   }
+  // showing date & hour
   const fechaElement = clone.querySelector('small.fecha')
   if (fechaElement) {
     const fechaDate = new Date(fecha)
