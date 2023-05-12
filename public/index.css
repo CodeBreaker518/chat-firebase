@@ -1,6 +1,6 @@
 .container-chat {
   overflow-y: scroll;
-  height: calc(100vh - 160px);
+  height: calc(100vh - 200px);
 }
 
 #chat div {
@@ -13,11 +13,130 @@ p {
   margin-top: 1rem;
   margin-bottom: 0;
 }
-small {
-  font-size: 0.8rem;
-  line-height: 0.5rem;
-}
 .badge {
   font-size: 1rem;
   font-weight: 400;
+}
+
+.navbar
+{
+  display: flex;
+}
+
+.form-container
+{
+  display: flex;
+  align-items: center;
+}
+
+i.right
+{
+  margin: 0 !important;
+}
+
+.btn-enviar
+{
+  border-radius: 20px;
+}
+
+#text-input
+{
+  color: black;
+}
+
+#text-input > label
+{
+  color: #263238!important;
+}
+
+.active
+{
+  color: #263238 !important;
+}
+
+.prefix
+{
+  color: #263238 !important;
+}
+p{
+  line-height: 1 !important;
+}
+span.badge{
+  margin: 0 !important;
+}
+
+
+/* label underline focus color */
+.input-field input[type=text]:focus {
+  border-bottom: 1px solid #263238 !important;
+  box-shadow: 0 1px 0 0 #263238 !important;
+}
+
+.input-field input[type=text].valid {
+  border-bottom: 1px solid #263238;
+  box-shadow: 0 1px 0 0 #263238;
+}
+
+.btn-sign
+{
+  border-radius: 20px;
+}
+
+.msg-container-start
+{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  /* border-radius: 20px; */
+}
+
+.msg-container-end
+{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+  /* border-radius: 20px; */
+}
+
+a.collection-item
+{
+  border-radius: 20px;
+  background: #dddddd !important;
+}
+a.collection-item:hover
+{
+  background: #d0d0d0!important;
+}
+
+.collection
+{
+  border-color: transparent;
+}
+
+.msg-up-end .username,
+.msg-up-end .fecha{
+  text-align: end;
+}
+.msg-down-end .badge{
+  float: right;
+}
+
+.msg-up-start .fecha
+.msg-up-start .username
+{
+  text-align: start;
+}
+.msg-down-start .badge{
+  float: left;
+
+}
+
+.fecha
+{
+  line-height: 1;
+  font-size: 0.8rem;
+  font-weight: 400;
+  font-style: italic;
 }
