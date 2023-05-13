@@ -140,3 +140,12 @@ a.collection-item:hover
   font-weight: 400;
   font-style: italic;
 }
+
+.user-info
+{
+  position: absolute;
+  background-color: #263238;
+  width: 300px;
+  height: 300px;
+  
+}

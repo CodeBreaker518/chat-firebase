@@ -34,6 +34,7 @@ const chat = document.querySelector('#chat')
 const btnEnviar = document.querySelector('#btnEnviar')
 const mensajeLogOut = document.querySelector('#mensajeLogOut')
 const textInput = document.querySelector('#text-input > label')
+const userInfo = document.querySelector('#user-info')
 
 const app = initializeApp(firebaseConfig)
 const auth = getAuth(app)
@@ -158,17 +159,30 @@ const pintarChat = ({ msg, uid, username, fecha }) => {
   // showing username
   if (userName) {
     if (username === auth.currentUser.displayName) {
-      userName.textContent = "Me"
+      userName.textContent = (`ME (${username})`)
     } else {
       userName.textContent = username
     }
   }
-  // showing date & hour
+
+  //showing date & hour
   const fechaElement = clone.querySelector('p.fecha')
   if (fechaElement) {
     const fechaDate = new Date(fecha)
     const fechaFormatted = fechaDate.toLocaleString()
     fechaElement.textContent = fechaFormatted
   }
+  
+  
+  // Agregar evento de clic al nombre de usuario
+  userName.addEventListener('click', () => {
+    const modalElement = document.querySelector('#modal');
+    const modalUsernameElement = document.querySelector('#modalUsername');
+
+    modalUsernameElement.innerHTML = username + '<br>' + msg;
+
+    const modalInstance = M.Modal.init(modalElement);
+    modalInstance.open();
+  });
   chat.append(clone)
 }
