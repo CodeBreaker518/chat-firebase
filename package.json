@@ -1,0 +1,12 @@
+{
+  "name": "chat-firebase",
+  "version": "1.0.0",
+  "description": "Little chat created using firebase and vanilla JavasScript ES6+ & Bootstrap",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Diego perez",
+  "license": "ISC"
+}
